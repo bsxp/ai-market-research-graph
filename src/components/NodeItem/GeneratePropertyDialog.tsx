@@ -20,7 +20,7 @@ import {
 } from "../ui/form"
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
-import { Plus } from 'lucide-react'
+import { Search } from 'lucide-react'
 import * as z from "zod"
 
 // hooks
@@ -30,19 +30,18 @@ import useData from '../../hooks/useData'
 const formSchema = z.object({
   property: z.string(),
   type: z.string(),
-  value: z.any()
 })
-
 
 interface Props {
   nodeId: string
 }
 
-const AddPropertyDialog: React.FC<Props> = ({
+const GeneratePropertyDialog: React.FC<Props> = ({
   nodeId
 }) => {
 
   const [open, setOpen] = useState<boolean>(false)
+  const [generatedValue, setGeneratedValue] = useState<any>(null)
 
   const { addPropertyToNode } = useData()
 
@@ -52,14 +51,13 @@ const AddPropertyDialog: React.FC<Props> = ({
     defaultValues: {
       property: "",
       type: "",
-      value: "",
     },
   })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     addPropertyToNode(nodeId, values.property, {
       type: values.type,
-      value: values.value
+      value: generatedValue
     })
     setOpen(false)
   }
@@ -68,12 +66,12 @@ const AddPropertyDialog: React.FC<Props> = ({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant='secondary' className="text-blue-500">
-          <Plus className="mr-2 h-4 w-4"/>Add property
+          <Search className="mr-2 h-4 w-4"/>Find property
         </Button>
       </DialogTrigger>
       <DialogContent className='bg-white'>
         <DialogHeader>
-          <DialogTitle>Add property</DialogTitle>
+          <DialogTitle>Find property</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -111,20 +109,7 @@ const AddPropertyDialog: React.FC<Props> = ({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="value"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Value</FormLabel>
-                  <FormControl>
-                    <Input placeholder='Enter value' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" variant='default'>Add</Button>
+            <Button type="submit" variant='default'>Search</Button>
           </form>
         </Form>
       </DialogContent>
@@ -132,4 +117,4 @@ const AddPropertyDialog: React.FC<Props> = ({
   )
 }
 
-export default AddPropertyDialog
+export default GeneratePropertyDialog

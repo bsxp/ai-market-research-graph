@@ -3,6 +3,7 @@ import { jsPlumb, jsPlumbInstance } from "jsplumb";
 import NodeItem from "../components/NodeItem";
 import useData from "../hooks/useData";
 import "../index.css"
+import EntrypointForm from "../components/EntrypointForm";
 
 interface Props {}
 
@@ -34,6 +35,7 @@ const Diagram: React.FC<Props> = ({}) => {
   return (
     <>
       <div ref={container} id="drawing" className="App">
+        <EntrypointForm />
         {Object.values(nodes).map((item) => {
           return (
             <NodeItem

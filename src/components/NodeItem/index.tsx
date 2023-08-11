@@ -9,25 +9,11 @@ import { TabsList, TabsTrigger } from '../ui/tabs'
 import { fetchCompetitors } from '../../api'
 import { Icons } from '../ui/icons'
 import useData from '../../hooks/useData'
-
-export interface Node {
-  id: string 
-  name: string
-  description: string
-  styleProps: object
-  properties: { [key: string]: any }
-  relationships: { [key: string]: any }
-}
+import { GraphNode } from '../../types'
+import GeneratePropertyDialog from './GeneratePropertyDialog'
 
 interface Props {
-  node: {
-    id: string
-    name: string
-    description?: string
-    styleProps: { [key: string]: any }
-    properties: { [key: string]: any }
-    relationships: any[]
-  }
+  node: GraphNode
   id: string
   styleProps: object
   instance: any
@@ -86,13 +72,12 @@ const NodeItem: React.FC<Props> = ({
 
   const findCompetitors = async () => {
     setLoading(true)
-    console.log("Finding competitors for", node.name)
-    const response = await fetchCompetitors(node.name, 10);
-    setLoading(false)
-
-    const responseOptions = response.data.choices[0].message.content
     
     try {
+      // Fetch and select response 
+      const response = await fetchCompetitors(node.name, 10);
+      const responseOptions = response.data.choices[0].message.content
+
       // Validate the response was a JSON.. may not happen sometimes
       const validJson = JSON.parse(responseOptions)
       
@@ -125,6 +110,8 @@ const NodeItem: React.FC<Props> = ({
       })
     } catch (err) {
       console.log("Error parsing response:", err)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -152,7 +139,10 @@ const NodeItem: React.FC<Props> = ({
               Properties
             </AccordionTrigger>
             <AccordionContent>
-              <AddPropertyDialog id={id}/>
+              <div className="flex items-center gap-x-2">
+              <AddPropertyDialog nodeId={id}/>
+              <GeneratePropertyDialog nodeId={id}/>
+              </div>
               <ul>
                 {Object.keys(properties).map((propertyName) => (
                   <li>

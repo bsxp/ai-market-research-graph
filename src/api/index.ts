@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const apiKey = process.env.OPENAI_API_KEY
+const apiKey = import.meta.env.OPENAI_API_KEY
 
 export const fetchCompetitors = (companyName: string, number: number = 20) => {
   return axios.post("https://api.openai.com/v1/chat/completions",

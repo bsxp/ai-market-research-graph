@@ -1,16 +1,29 @@
 import { create } from 'zustand'
+import { GraphNode } from '../types'
 
-const defaultNodes = {
-  'e1': {
-    name: "Paragon Pharmaceutical",
-    styleProps: { top: "80px", left: "250px" },
-    type: 'company',
-    id: "e1"
-  }
+type AddPropertyToNodeFunction = (id: string, property: string, value: { type: string, value: any }) => void
+
+type AddRelationshipToNodeFunction = (id: string, relationshipNodeId: string, type: string) => void
+
+type AddNodeFunction = (
+  name: string,
+  type: string,
+  styleProps: object,
+  properties: {[key: string]: { type: string, value: any}},
+  relationships: { [key: string]: any[]},
+  target: string|null
+) => void
+
+
+type NodeData = {
+  nodes: {[key: string]: GraphNode}
+  addPropertyToNode: AddPropertyToNodeFunction
+  addRelationshipToNode: AddRelationshipToNodeFunction
+  addNode: AddNodeFunction
 }
 
-const useData = create((set, get) => ({
-  nodes: defaultNodes,
+const useData = create<NodeData>((set, get) => ({
+  nodes: {},
   addPropertyToNode: (id, property, value) => {
     set((state) => ({
       ...state,
@@ -26,7 +39,7 @@ const useData = create((set, get) => ({
       }
     }))
   },
-  addRelationshipToNode: (id: string, relationshipNodeId: string, type: string) => {
+  addRelationshipToNode: (id, relationshipNodeId, type) => {
     set((state) => ({
       ...state,
       nodes: {
@@ -43,7 +56,10 @@ const useData = create((set, get) => ({
       }
     }))
   },
-  addNode: (id: string, name: string, type: string, styleProps: object, properties={}, relationships=[], target: string|null=null) => {
+  addNode: (name, type, styleProps, properties={}, relationships=[], target=null) => {
+
+    const id = name.toLowerCase().replace(" ", "_")
+
     set((state) => ({
       ...state,
       nodes: {
